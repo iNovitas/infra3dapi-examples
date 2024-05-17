@@ -1,8 +1,8 @@
 
 export async function loadInfra3D() {
-    const infra3d = await import(/* webpackChunkName: "infra3d" */ "@inovitas/infra3dapi");
-    const mytokenrespones = await infra3d.getGuestAccessToken();
-    const manager = await infra3d.init(
+    await import("https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@1.0.0-beta.1");
+    const mytokenrespones = await infra3dapi.getGuestAccessToken();
+    const manager = await infra3dapi.init(
       "viewer", 
       mytokenrespones.access_token, 
       {

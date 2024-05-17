@@ -14,14 +14,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: "index.html", // to import index.html file inside index.js
-        }),
-        new CopyPlugin({
-            patterns: [
-                // Specify which files from node_modules you want to copy
-                { from: 'node_modules/@inovitas/infra3dapi', to: '' },
-                // Add more patterns for other libraries if needed
-            ],
-        }),
+        })
     ],
     optimization: {
         splitChunks: {
