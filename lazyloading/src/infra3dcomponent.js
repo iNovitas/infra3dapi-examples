@@ -1,6 +1,6 @@
 
 export async function loadInfra3D() {
-    await import("https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@1.0.0-beta.1");
+    await import("https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@1.0.2");
     const mytokenrespones = await infra3dapi.getGuestAccessToken();
     const manager = await infra3dapi.init(
       "viewer", 
@@ -20,6 +20,9 @@ export async function loadInfra3D() {
       show_cockpit: true,
       show_mapWindow: false
     });
+    viewer.on("campaignschanged", (campaigns) =>
+      console.log("Campaign: ", campaigns)
+    );
 
     return viewer;
 }

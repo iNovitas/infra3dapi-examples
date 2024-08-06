@@ -7,7 +7,14 @@ function component() {
     button.innerHTML = 'Load infra3D!';
     element.appendChild(br);
     element.appendChild(button);
-    button.onclick = e => loadInfra3D();
+    button.onclick = e => {
+      button.style.cursor = "wait"; 
+      loadInfra3D().then(_=>{
+        button.style.cursor = "default"; 
+      }).catch(_=>{
+        button.style.cursor = "default"; 
+      });
+    }
     return element;
   }
   
