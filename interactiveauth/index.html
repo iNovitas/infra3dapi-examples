@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrate viewer into the page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #viewer {
+        position: absolute;
+        width: 800px;
+        height: 600px;
+        overflow: hidden;
+      }
+      #logoutbutton {
+        position: absolute;
+        top: 600px;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@latest/infra3dapi.js"></script>
+    <script type="text/javascript" src="interactive.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+
+    <script type="text/javascript">
+      async function loadInfra3dViewer() {
+        const tokenresponse = await infra3dinteractivelogin.login(
+          client_id, 
+          redirect_uri,
+          oauthUri,
+          {
+            popupWidth: "700",
+            mode: 'popup',
+            iframeContainer: 'viewer'
+          }
+        );
+        const manager = await infra3dapi.init(
+          "viewer",
+          tokenresponse.access_token,
+          {
+            username: tokenresponse.username,
+            email: tokenresponse.email,
+          }
+        );
+        const fetchedProjects = await manager.getProjects();
+        const projectUID = fetchedProjects[0].uid;
+        const viewer = await manager.initViewer({
+          project_uid: projectUID,
+          show_toolbar: true,
+          map_expand: true,
+          toolbar: "edit"
+        });
+      }
+      
+      function main() {
+        loadInfra3dViewer()
+          .then(() => {
+            console.log("token successfully initialized infra3d");
+          })
+          .catch((error) => {
+            console.error("Error during initialization:", error);
+          });
+      }
+    </script>
+  </head>
+  <body onload="main()">
+    <div id="viewer"></div>
+    <div id="map"></div>
+  </body>
+</html>

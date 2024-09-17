@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Callback</title>
+  <script>
+    // Extrahiere den Authorization Code aus der URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const authCode = urlParams.get('code');
+
+    // Sende den Code zurück an das Hauptfenster
+    if (authCode && window.opener) {
+        window.opener.postMessage(authCode, "http://localhost:3000");
+        window.close();
+    }
+
+    if (authCode && window.parent) {
+        window.parent.postMessage(authCode, "http://localhost:3000");
+        window.close();
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>
