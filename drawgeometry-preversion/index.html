@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrate viewer into the page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #viewer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@latest/infra3dapi.js"></script>
+    <script type="text/javascript">
+      async function loadInfra3dViewer() {
+        const mytokenrespones = await infra3dapi.getGuestAccessToken();
+        const manager = await infra3dapi.init(
+          "viewer",
+          mytokenrespones.access_token,
+          {
+            username: "Guest",
+            email: "support@inovitas.ch",
+          }
+        );
+        const fetchedProjects = await manager.getProjects();
+        const projectUID = fetchedProjects[0].uid;
+        const init_viewer_options = {
+          project_uid: projectUID,
+          show_toolbar: true,
+          map_expand: true,
+          toolbar: "edit"
+        }
+        const viewer = await manager.initViewer(init_viewer_options);
+
+        //get the toolhandler from the internal viewer and scene object
+        const toolhandler = viewer._sdk_viewer.getScene().getToolHandler();
+
+        //create a draw point tool and pass the callback functions in the options
+        const tool = toolhandler.createDrawPointTool({
+          finishedcbf: (evt)=>{
+            console.log(evt)
+            console.log(evt.pointfeature.geometry.coordinates);
+          },
+          errorcbf: (evt)=>{
+            console.log(evt)
+          },
+          disablecbf: (evt)=>{
+            console.log(evt)
+          },
+          resetcbf: (evt)=>{
+            console.log(evt)
+          },
+          continousdraw: true,
+          singleactive: false
+        }, "pointMeasure_external", "external");
+
+        //enable the tool
+        tool.enable();
+
+        //disable the tool after 20s
+        setTimeout(()=>{
+          tool.disable();
+        }, 20000);
+      }
+
+      function main() {
+        loadInfra3dViewer()
+          .then(() => {
+            console.log("token successfully initialized infra3d");
+          })
+          .catch((error) => {
+            console.error("Error during initialization:", error);
+          });
+      }
+    </script>
+  </head>
+  <body onload="main()">
+    <div id="viewer"></div>
+  </body>
+</html>
