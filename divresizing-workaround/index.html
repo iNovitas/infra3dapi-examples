@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrate viewer into the page</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #viewer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      #resizable {
+            width: 600px;
+            height: 600px;
+            background-color: lightblue;
+            position: relative;
+            border: 2px solid rgb(23, 139, 0);;
+        }
+
+        .resize-handle {
+            width: 10px;
+            height: 10px;
+            background-color: rgb(23, 139, 0);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            cursor: se-resize;
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@inovitas/infra3dapi@latest/infra3dapi.js"></script>
+    
+    <script type="text/javascript">
+      async function loadInfra3dViewer() {
+        const mytokenrespones = await infra3dapi.getGuestAccessToken();
+        const manager = await infra3dapi.init(
+          "viewer",
+          mytokenrespones.access_token,
+          {
+            username: "Guest",
+            email: "support@inovitas.ch",
+          }
+        );
+        const fetchedProjects = await manager.getProjects();
+        const projectUID = fetchedProjects[0].uid;
+        const init_viewer_options = {
+          project_uid: projectUID,
+          show_toolbar: true,
+          map_expand: false,
+          toolbar: "edit"
+        }
+        const viewer = await manager.initViewer(init_viewer_options);
+
+        const viewerEl = document.getElementById('viewer');
+        const resizeObserver = new ResizeObserver(entries => {
+            viewer._sdk_viewer.resize();
+        });
+        resizeObserver.observe(viewerEl);
+      }
+
+      function main() {
+        loadInfra3dViewer()
+          .then(() => {
+            console.log("token successfully initialized infra3d");
+          })
+          .catch((error) => {
+            console.error("Error during initialization:", error);
+          });
+      }
+    </script>
+  </head>
+  <body onload="main()">
+    
+    <!-- <div id="viewer"></div> -->
+    <div id="resizable">
+      <div id="viewer"></div>
+      <div class="resize-handle"></div>
+  </div>
+  <script type="text/javascript" src="resizable.js"></script>
+  </body>
+</html>
