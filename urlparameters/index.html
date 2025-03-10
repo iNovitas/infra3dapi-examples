@@ -38,17 +38,21 @@
           toolbar: "edit"
         }
 
-        if (searchParams.get("lon") && searchParams.get("lat"))
+        if (searchParams.get("lon") && searchParams.get("lat") && searchParams.get("campaign_id"))
         {
           init_viewer_options["start_position"] = {
             easting: parseFloat(searchParams.get("lon")),
             northing: parseFloat(searchParams.get("lat"))
           };
+          init_viewer_options["start_campaign"] = {
+            id: searchParams.get("campaign_id")
+          }
         }
         const viewer = await manager.initViewer(init_viewer_options);
         viewer.on("nodechanged", (evt)=>{
           searchParams.set("lon", evt.lon.toFixed(6)),
           searchParams.set("lat", evt.lat.toFixed(6))
+          searchParams.set("campaign_id", evt.campaign_id)
           window.history.replaceState('', '', window.location.pathname + "?"+searchParams.toString());
         });
       }
